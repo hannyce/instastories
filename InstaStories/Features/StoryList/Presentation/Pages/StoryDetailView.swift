@@ -13,11 +13,12 @@ import SwiftData
 struct StoryDetailView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
-    var user: User
 
     @State private var progress: CGFloat = 0.0
     @State private var isPaused = false
-    private let storyDuration: TimeInterval = 5.0 // 5 sec per story
+    private let storyDuration: TimeInterval = 5.0
+
+    var user: User
 
     var body: some View {
         ZStack {
@@ -46,11 +47,21 @@ struct StoryDetailView: View {
                 .padding(.horizontal)
 
                 Spacer()
+
+                Button(action: tapLike) {
+                    Image(systemName: user.liked ? "heart.fill" : "heart")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 50, height: 50)
+                        .foregroundColor(user.liked ? .red : .white)
+                        .padding(.bottom, 50)
+                        .animation(.easeInOut, value: user.liked)
+                }
             }
         }
         .onAppear {
-            markAsSeen()
-            startProgress()
+            setAsSeen()
+            startProgressBar()
         }
         .onTapGesture {
             dismiss()
@@ -94,22 +105,27 @@ struct StoryDetailView: View {
             )
     }
 
-    private func markAsSeen() {
+    private func setAsSeen() {
         guard !user.seen else { return }
         user.seen = true
         try? modelContext.save()
     }
 
-    private func startProgress() {
+    private func startProgressBar() {
         Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { timer in
             if progress >= 1.0 {
-                dismiss() // Auto-close when progress finishes
+                dismiss()
                 timer.invalidate()
             }
             if !isPaused {
                 progress += 0.1 / CGFloat(storyDuration)
             }
         }
+    }
+
+    private func tapLike() {
+        user.liked.toggle()
+        try? modelContext.save()
     }
 }
 
