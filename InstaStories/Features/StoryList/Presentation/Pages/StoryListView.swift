@@ -57,7 +57,7 @@ struct StoryListView: View {
                             Circle()
                                 .stroke(
                                     LinearGradient(
-                                        gradient: Gradient(colors: user.seen ? [.purple, .red, .orange] : [.red]),
+                                        gradient: Gradient(colors: user.seen ? [.gray] : [.purple, .red, .orange]),
                                         startPoint: .topLeading,
                                         endPoint: .bottomTrailing
                                     ),
