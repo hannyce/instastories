@@ -21,6 +21,7 @@ class StoryListViewModel: ObservableObject {
         }
     }
 
+    @MainActor
     private func fetchUsers() async {
         isLoading = true
         do {
